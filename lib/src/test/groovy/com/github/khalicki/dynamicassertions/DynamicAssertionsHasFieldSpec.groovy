@@ -1,6 +1,7 @@
 package com.github.khalicki.dynamicassertions
 
 import com.github.khalicki.dynamicassertions.data.ObjectWithCamelCaseField
+import com.github.khalicki.dynamicassertions.data.ObjectWithOneLetterField
 import com.github.khalicki.dynamicassertions.data.ObjectWithTitleField
 import com.github.khalicki.dynamicassertions.data.ObjectWithTwoFields
 import spock.lang.Specification
@@ -68,5 +69,30 @@ class DynamicAssertionsHasFieldSpec extends Specification {
             DynamicAssertions.assertThat(new ObjectWithTwoFields('When Harry met Sally', 'Rob Reiner'))
                 .hasTitle('When Harry met Sally')
                 .hasDirector('Rob Reiner')
+    }
+
+    def "should fail when no field name is given"() {
+        when:
+            DynamicAssertions.assertThat(new ObjectWithTitleField('When Harry met Sally'))
+                .has('Some value')
+
+        then:
+            thrown(MissingFieldNameInAssertion)
+    }
+
+    def "should succeed with one letter field"() {
+        expect:
+            DynamicAssertions.assertThat(new ObjectWithOneLetterField(7))
+                .hasN(7)
+    }
+
+    def "should fail when expected value is not given"() {
+        when:
+            DynamicAssertions.assertThat(new ObjectWithTitleField('When Harry met Sally'))
+                .hasTitle()
+
+        then:
+            def exception = thrown(IllegalArgumentException)
+            exception.message == "Missing expected value in assertion hasTitle()"
     }
 }
