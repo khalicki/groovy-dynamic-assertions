@@ -1,9 +1,8 @@
 package com.github.khalicki.dynamicassertions.data
 
+import groovy.transform.TupleConstructor
+
+@TupleConstructor
 class ObjectWithTitleField {
     String title
-
-    ObjectWithTitleField(String title) {
-        this.title = title
-    }
 }

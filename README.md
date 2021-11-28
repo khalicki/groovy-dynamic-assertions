@@ -24,3 +24,29 @@ DynamicAssertions.assertThat(new Movie('When Harry met Sally', 'Rob Reiner'))
     .hasTitle('When Harry met Sally')
     .hasDirector('Rob Reiner')
 ```
+
+#### Types of Assertions
+
+##### hasFieldName
+
+Basic assertion that check field X has given value.
+
+```groovy
+.hasTitle('When Harry met Sally')
+```
+
+##### hasFieldNameThat on List
+
+Verifies a field is not null and is a list and allow chaining assertions on that list.
+
+```groovy
+.hasIngredientsThat()
+    .contains('cheese')
+    .contains('bacon')    
+```
+
+Allows also check that list is empty:
+```groovy
+.hasIngredientsThat()
+    .isEmpty()
+```
