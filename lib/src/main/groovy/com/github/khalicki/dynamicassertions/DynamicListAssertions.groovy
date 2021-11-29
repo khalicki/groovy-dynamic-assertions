@@ -18,4 +18,9 @@ class DynamicListAssertions {
         assert listUnderTest.isEmpty()
         return this
     }
+
+    DynamicListAssertions hasSize(int expectedSize) {
+        assert listUnderTest.size() == expectedSize
+        return this
+    }
 }

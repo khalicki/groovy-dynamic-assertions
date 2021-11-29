@@ -45,8 +45,11 @@ Verifies a field is not null and is a list and allow chaining assertions on that
     .contains('bacon')    
 ```
 
-Allows also check that list is empty:
+Allows also check that list is empty or its size:
 ```groovy
 .hasIngredientsThat()
     .isEmpty()
+
+.hasIngredientsThat()
+    .hasSize(2)
 ```

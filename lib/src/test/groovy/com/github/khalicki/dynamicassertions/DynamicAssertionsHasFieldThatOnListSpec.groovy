@@ -4,7 +4,7 @@ import com.github.khalicki.dynamicassertions.data.ObjectWithListField
 import com.github.khalicki.dynamicassertions.data.ObjectWithTitleField
 import spock.lang.Specification
 
-class DynamicAssertionsHasFieldThatOnIterableSpec extends Specification {
+class DynamicAssertionsHasFieldThatOnListSpec extends Specification {
 
     def "should succeed when hasFieldThat is called on empty list"() {
         expect:
@@ -84,5 +84,30 @@ class DynamicAssertionsHasFieldThatOnIterableSpec extends Specification {
         then:
             def exception = thrown(AssertionError)
             exception.message.contains('listUnderTest.isEmpty()')
+    }
+
+    def "should succeed when hasSize is called on empty list"() {
+        expect:
+            DynamicAssertions.assertThat(new ObjectWithListField([]))
+                .hasIngredientsThat()
+                    .hasSize(0)
+    }
+
+    def "should succeed when hasSize is called on not empty list"() {
+        expect:
+            DynamicAssertions.assertThat(new ObjectWithListField(['tomato']))
+                .hasIngredientsThat()
+                    .hasSize(1)
+    }
+
+    def "should fail when hasSize is called on not empty list but has different size"() {
+        when:
+            DynamicAssertions.assertThat(new ObjectWithListField(['salami']))
+                .hasIngredientsThat()
+                    .hasSize(2)
+
+        then:
+            def exception = thrown(AssertionError)
+            exception.message.contains('listUnderTest.size() == expectedSize')
     }
 }
