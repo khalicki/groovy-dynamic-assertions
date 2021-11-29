@@ -3,6 +3,7 @@ package com.github.khalicki.dynamicassertions
 class DynamicAssertions implements GroovyInterceptable {
     public static final String AS_BOOLEAN_METHOD = "asBoolean"
     public static final String HAS_ASSERTION_PREFIX = "has"
+    public static final String HAS_EMPTY_ASSERTION_PREFIX = "hasEmpty"
     public static final String THAT_ASSERTION_POSTFIX = "That"
 
     private Object objectUnderTest
@@ -23,6 +24,9 @@ class DynamicAssertions implements GroovyInterceptable {
         if (name.startsWith(HAS_ASSERTION_PREFIX) && name.endsWith(THAT_ASSERTION_POSTFIX)) {
             def fieldName = extractFieldName(name, HAS_ASSERTION_PREFIX, THAT_ASSERTION_POSTFIX)
             return assertListField(this, objectUnderTest, fieldName)
+        } else if (name.startsWith(HAS_EMPTY_ASSERTION_PREFIX)) {
+            def fieldName = extractFieldName(name, HAS_EMPTY_ASSERTION_PREFIX)
+            return assertEmptyListField(this, objectUnderTest, fieldName)
         } else if (name.startsWith(HAS_ASSERTION_PREFIX)) {
             if (argumentList == null || argumentList.length < 1) throw new IllegalArgumentException("Missing expected value in assertion ${name}()")
             def fieldName = extractFieldName(name, HAS_ASSERTION_PREFIX)
@@ -44,6 +48,14 @@ class DynamicAssertions implements GroovyInterceptable {
         assert list != null
         assert (list instanceof List)
         return new DynamicListAssertions(list, assertionObject)
+    }
+
+    static DynamicAssertions assertEmptyListField(DynamicAssertions assertionObject, Object objectUnderTest, String fieldName) {
+        def list = objectUnderTest[fieldName]
+        assert list != null
+        assert (list instanceof List)
+        assert list.isEmpty()
+        return assertionObject
     }
 
     static String extractFieldName(String methodName, String assertionPrefix, String assertionPostfix = null) {

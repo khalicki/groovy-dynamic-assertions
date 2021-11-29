@@ -6,7 +6,7 @@ import spock.lang.Specification
 
 class DynamicAssertionsHasFieldThatOnListSpec extends Specification {
 
-    def "should succeed when hasFieldThat is called on empty list"() {
+    def "should succeed when hasFieldThat() is called on empty list"() {
         expect:
             DynamicAssertions.assertThat(new ObjectWithListField([]))
                 .hasIngredientsThat()
@@ -68,14 +68,14 @@ class DynamicAssertionsHasFieldThatOnListSpec extends Specification {
             exception.message.contains('bacon')
     }
 
-    def "should succeed when isEmpty is called on empty list"() {
+    def "should succeed when isEmpty() is called on empty list"() {
         expect:
             DynamicAssertions.assertThat(new ObjectWithListField([]))
                 .hasIngredientsThat()
                     .isEmpty()
     }
 
-    def "should fail when isEmpty is called on not empty list"() {
+    def "should fail when isEmpty() is called on not empty list"() {
         when:
             DynamicAssertions.assertThat(new ObjectWithListField(['salami']))
                 .hasIngredientsThat()
@@ -86,21 +86,21 @@ class DynamicAssertionsHasFieldThatOnListSpec extends Specification {
             exception.message.contains('listUnderTest.isEmpty()')
     }
 
-    def "should succeed when hasSize is called on empty list"() {
+    def "should succeed when hasSize() is called on empty list"() {
         expect:
             DynamicAssertions.assertThat(new ObjectWithListField([]))
                 .hasIngredientsThat()
                     .hasSize(0)
     }
 
-    def "should succeed when hasSize is called on not empty list"() {
+    def "should succeed when hasSize() is called on not empty list"() {
         expect:
             DynamicAssertions.assertThat(new ObjectWithListField(['tomato']))
                 .hasIngredientsThat()
                     .hasSize(1)
     }
 
-    def "should fail when hasSize is called on not empty list but has different size"() {
+    def "should fail when hasSize() is called on not empty list but has different size"() {
         when:
             DynamicAssertions.assertThat(new ObjectWithListField(['salami']))
                 .hasIngredientsThat()
@@ -109,5 +109,21 @@ class DynamicAssertionsHasFieldThatOnListSpec extends Specification {
         then:
             def exception = thrown(AssertionError)
             exception.message.contains('listUnderTest.size() == expectedSize')
+    }
+
+    def "should succeed when hasEmptyField() is called on empty list"() {
+        expect:
+            DynamicAssertions.assertThat(new ObjectWithListField([]))
+                .hasEmptyIngredients()
+    }
+
+    def "should fail when hasEmptyField() is called on not empty list"() {
+        when:
+            DynamicAssertions.assertThat(new ObjectWithListField(['salami']))
+                .hasEmptyIngredients()
+
+        then:
+            def exception = thrown(AssertionError)
+            exception.message.contains('list.isEmpty()')
     }
 }

@@ -35,7 +35,7 @@ Basic assertion that check field X has given value.
 .hasTitle('When Harry met Sally')
 ```
 
-##### hasFieldNameThat on List
+##### hasFieldNameThat on List fields
 
 Verifies a field is not null and is a list and allow chaining assertions on that list.
 
@@ -52,4 +52,12 @@ Allows also check that list is empty or its size:
 
 .hasIngredientsThat()
     .hasSize(2)
+```
+
+##### hasEmptyFieldName on List fields
+
+When you want to check that field with list is empty then you can use this assertion without nesting.
+
+```groovy
+.hasEmptyIngredients()
 ```
