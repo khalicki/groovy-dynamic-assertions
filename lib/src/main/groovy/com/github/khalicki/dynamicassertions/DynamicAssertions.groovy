@@ -26,7 +26,7 @@ class DynamicAssertions implements GroovyInterceptable {
             return assertListField(this, objectUnderTest, fieldName)
         } else if (name.startsWith(HAS_EMPTY_ASSERTION_PREFIX)) {
             def fieldName = extractFieldName(name, HAS_EMPTY_ASSERTION_PREFIX)
-            return assertEmptyListField(this, objectUnderTest, fieldName)
+            return assertEmptyField(this, objectUnderTest, fieldName, name)
         } else if (name.startsWith(HAS_ASSERTION_PREFIX)) {
             if (argumentList == null || argumentList.length < 1) throw new IllegalArgumentException("Missing expected value in assertion ${name}()")
             def fieldName = extractFieldName(name, HAS_ASSERTION_PREFIX)
@@ -50,10 +50,26 @@ class DynamicAssertions implements GroovyInterceptable {
         return new DynamicListAssertions(list, assertionObject)
     }
 
-    static DynamicAssertions assertEmptyListField(DynamicAssertions assertionObject, Object objectUnderTest, String fieldName) {
-        def list = objectUnderTest[fieldName]
-        assert list != null
-        assert (list instanceof List)
+    static DynamicAssertions assertEmptyField(DynamicAssertions assertionObject, Object objectUnderTest, String fieldName, String assertionName) {
+        def field = objectUnderTest[fieldName]
+        assert field != null
+        if (field instanceof List) {
+            def list = (List) field
+            assert list.isEmpty()
+        } else if (field instanceof String) {
+            assert field.isEmpty()
+        } else {
+            throw new UnsupportedAssertion(assertionName)
+        }
+        return assertionObject
+    }
+
+    static DynamicAssertions assertEmptyStringField(DynamicAssertions assertionObject, Object objectUnderTest, String value) {
+
+
+    }
+
+    static DynamicAssertions assertEmptyListField(DynamicAssertions assertionObject, Object objectUnderTest, List list) {
         assert list.isEmpty()
         return assertionObject
     }
@@ -71,8 +87,13 @@ class DynamicAssertions implements GroovyInterceptable {
 }
 
 class MissingFieldNameInAssertion extends RuntimeException {
-
     MissingFieldNameInAssertion(String methodName) {
         super("Assertion with name '$methodName' should contain field name")
+    }
+}
+
+class UnsupportedAssertion extends RuntimeException {
+    UnsupportedAssertion(String methodName) {
+        super("Assertion with name '$methodName' is not supported on given type")
     }
 }

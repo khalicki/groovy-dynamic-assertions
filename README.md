@@ -61,3 +61,11 @@ When you want to check that field with list is empty then you can use this asser
 ```groovy
 .hasEmptyIngredients()
 ```
+
+##### hasEmptyFieldName on String fields
+
+Checks that field is empty String. String with null value is not treated as empty.
+
+```groovy
+.hasEmptyTitle()
+```

@@ -110,20 +110,4 @@ class DynamicAssertionsHasFieldThatOnListSpec extends Specification {
             def exception = thrown(AssertionError)
             exception.message.contains('listUnderTest.size() == expectedSize')
     }
-
-    def "should succeed when hasEmptyField() is called on empty list"() {
-        expect:
-            DynamicAssertions.assertThat(new ObjectWithListField([]))
-                .hasEmptyIngredients()
-    }
-
-    def "should fail when hasEmptyField() is called on not empty list"() {
-        when:
-            DynamicAssertions.assertThat(new ObjectWithListField(['salami']))
-                .hasEmptyIngredients()
-
-        then:
-            def exception = thrown(AssertionError)
-            exception.message.contains('list.isEmpty()')
-    }
 }
