@@ -1,7 +1,7 @@
 package com.github.khalicki.dynamicassertions
 
+import com.github.khalicki.dynamicassertions.data.ObjectWithIntField
 import com.github.khalicki.dynamicassertions.data.ObjectWithListField
-import com.github.khalicki.dynamicassertions.data.ObjectWithTitleField
 import spock.lang.Specification
 
 class DynamicAssertionsHasFieldThatOnListSpec extends Specification {
@@ -28,13 +28,13 @@ class DynamicAssertionsHasFieldThatOnListSpec extends Specification {
 
         then:
             def exception = thrown(AssertionError)
-            exception.message.contains('list != null')
+            exception.message.contains('field != null')
     }
 
-    def "should fail when field is not list"() {
+    def "should fail when field is not list and not object"() {
         when:
-            DynamicAssertions.assertThat(new ObjectWithTitleField('Matrix'))
-                .hasTitleThat()
+            DynamicAssertions.assertThat(new ObjectWithIntField(42))
+                .hasNumberThat()
 
         then:
             thrown(AssertionError)

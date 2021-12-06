@@ -35,6 +35,23 @@ Basic assertion that check field X has given value.
 .hasTitle('When Harry met Sally')
 ```
 
+##### hasFieldNameThat on Object fields
+
+You can check fields in nested objects using this assertion. It fails when property with given field name has null value.
+
+```groovy
+.hasMovieThat()
+    .hasTitle('When Harry met Sally')
+```
+
+You can use this assertion multiple times to navigate to desired field.
+```groovy
+.hasMovieThat()
+    .hasDirectorThat()
+        .hasLastName('Reiner')
+```
+
+
 ##### hasFieldNameThat on List fields
 
 Verifies a field is not null and is a list and allow chaining assertions on that list.

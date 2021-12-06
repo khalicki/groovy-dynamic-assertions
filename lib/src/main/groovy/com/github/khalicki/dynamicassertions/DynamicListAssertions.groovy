@@ -1,6 +1,6 @@
 package com.github.khalicki.dynamicassertions
 
-class DynamicListAssertions {
+class DynamicListAssertions implements AssertionNode {
     private List listUnderTest
     private DynamicAssertions parent
 

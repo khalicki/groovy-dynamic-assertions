@@ -1,5 +1,6 @@
 package com.github.khalicki.dynamicassertions.ast
 
+import com.github.khalicki.dynamicassertions.ast.data.Movie
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
 
@@ -7,6 +8,8 @@ import groovy.transform.builder.SimpleStrategy
 @Builder(builderStrategy = SimpleStrategy, prefix = "with")
 class MovieAssertions {
     String title
+
+    Movie movie
 
     MovieAssertions(String title) {
         this.title = title

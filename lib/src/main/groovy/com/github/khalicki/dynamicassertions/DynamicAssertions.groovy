@@ -1,6 +1,6 @@
 package com.github.khalicki.dynamicassertions
 
-class DynamicAssertions implements GroovyInterceptable {
+class DynamicAssertions implements GroovyInterceptable, AssertionNode {
     public static final String AS_BOOLEAN_METHOD = "asBoolean"
     public static final String HAS_ASSERTION_PREFIX = "has"
     public static final String HAS_EMPTY_ASSERTION_PREFIX = "hasEmpty"
@@ -18,22 +18,36 @@ class DynamicAssertions implements GroovyInterceptable {
     }
 
     @Override
-    Object invokeMethod(String name, Object args) {
-        if (name == AS_BOOLEAN_METHOD) return true
+    Object invokeMethod(String assertionName, Object args) {
+        if (assertionName == AS_BOOLEAN_METHOD) return true
         Object[] argumentList = (Object[]) args
-        if (name.startsWith(HAS_ASSERTION_PREFIX) && name.endsWith(THAT_ASSERTION_POSTFIX)) {
-            def fieldName = extractFieldName(name, HAS_ASSERTION_PREFIX, THAT_ASSERTION_POSTFIX)
-            return assertListField(this, objectUnderTest, fieldName)
-        } else if (name.startsWith(HAS_EMPTY_ASSERTION_PREFIX)) {
-            def fieldName = extractFieldName(name, HAS_EMPTY_ASSERTION_PREFIX)
-            return assertEmptyField(this, objectUnderTest, fieldName, name)
-        } else if (name.startsWith(HAS_ASSERTION_PREFIX)) {
-            if (argumentList == null || argumentList.length < 1) throw new IllegalArgumentException("Missing expected value in assertion ${name}()")
-            def fieldName = extractFieldName(name, HAS_ASSERTION_PREFIX)
+        if (assertionName.startsWith(HAS_ASSERTION_PREFIX) && assertionName.endsWith(THAT_ASSERTION_POSTFIX)) {
+            def fieldName = extractFieldName(assertionName, HAS_ASSERTION_PREFIX, THAT_ASSERTION_POSTFIX)
+            return assertHasFieldThat(this, objectUnderTest, fieldName, assertionName)
+        } else if (assertionName.startsWith(HAS_EMPTY_ASSERTION_PREFIX)) {
+            def fieldName = extractFieldName(assertionName, HAS_EMPTY_ASSERTION_PREFIX)
+            return assertEmptyField(this, objectUnderTest, fieldName, assertionName)
+        } else if (assertionName.startsWith(HAS_ASSERTION_PREFIX)) {
+            if (argumentList == null || argumentList.length < 1) throw new IllegalArgumentException("Missing expected value in assertion ${assertionName}()")
+            def fieldName = extractFieldName(assertionName, HAS_ASSERTION_PREFIX)
             def expected = argumentList[0]
             return assertField(this, objectUnderTest, fieldName, expected)
         } else {
-            throw new MissingMethodException(name, DynamicAssertions.class, args)
+            throw new MissingMethodException(assertionName, DynamicAssertions.class, args)
+        }
+    }
+
+    static AssertionNode assertHasFieldThat(DynamicAssertions assertionObject, Object objectUnderTest, String fieldName, String assertionName) {
+        def field = objectUnderTest[fieldName]
+        assert field != null
+        if (field instanceof List) {
+            def list = (List) field
+            return assertListField(assertionObject, list)
+        } else if (field instanceof Object) {
+            def object = (Object) field
+            return assertObjectField(assertionObject, object)
+        } else {
+            throw new UnsupportedAssertion(assertionName)
         }
     }
 
@@ -43,11 +57,14 @@ class DynamicAssertions implements GroovyInterceptable {
         return assertionObject
     }
 
-    static DynamicListAssertions assertListField(DynamicAssertions assertionObject, Object objectUnderTest, String fieldName) {
-        def list = objectUnderTest[fieldName]
+    static DynamicListAssertions assertListField(DynamicAssertions assertionObject, List list) {
         assert list != null
-        assert (list instanceof List)
         return new DynamicListAssertions(list, assertionObject)
+    }
+
+    static DynamicAssertions assertObjectField(DynamicAssertions assertionObject, Object object) {
+        assert object != null
+        return new DynamicAssertions(object)
     }
 
     static DynamicAssertions assertEmptyField(DynamicAssertions assertionObject, Object objectUnderTest, String fieldName, String assertionName) {
@@ -61,16 +78,6 @@ class DynamicAssertions implements GroovyInterceptable {
         } else {
             throw new UnsupportedAssertion(assertionName)
         }
-        return assertionObject
-    }
-
-    static DynamicAssertions assertEmptyStringField(DynamicAssertions assertionObject, Object objectUnderTest, String value) {
-
-
-    }
-
-    static DynamicAssertions assertEmptyListField(DynamicAssertions assertionObject, Object objectUnderTest, List list) {
-        assert list.isEmpty()
         return assertionObject
     }
 
