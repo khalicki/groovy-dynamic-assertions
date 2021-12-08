@@ -2,14 +2,22 @@ package com.github.khalicki.dynamicassertions
 
 class DynamicAssertions implements GroovyInterceptable, AssertionNode {
     public static final String AS_BOOLEAN_METHOD = "asBoolean"
+    public static final String AND_METHOD = "and"
     public static final String HAS_ASSERTION_PREFIX = "has"
     public static final String HAS_EMPTY_ASSERTION_PREFIX = "hasEmpty"
     public static final String THAT_ASSERTION_POSTFIX = "That"
 
     private Object objectUnderTest
+    private AssertionNode parentAssertion
 
     DynamicAssertions(Object objectUnderTest) {
         this.objectUnderTest = objectUnderTest
+        this.parentAssertion = null
+    }
+
+    DynamicAssertions(Object objectUnderTest, AssertionNode parentAssertion) {
+        this.objectUnderTest = objectUnderTest
+        this.parentAssertion = parentAssertion
     }
 
     static assertThat(Object objectUnderTest) {
@@ -20,6 +28,7 @@ class DynamicAssertions implements GroovyInterceptable, AssertionNode {
     @Override
     Object invokeMethod(String assertionName, Object args) {
         if (assertionName == AS_BOOLEAN_METHOD) return true
+        if (assertionName == AND_METHOD) return getParentNode(this.parentAssertion)
         Object[] argumentList = (Object[]) args
         if (assertionName.startsWith(HAS_ASSERTION_PREFIX) && assertionName.endsWith(THAT_ASSERTION_POSTFIX)) {
             def fieldName = extractFieldName(assertionName, HAS_ASSERTION_PREFIX, THAT_ASSERTION_POSTFIX)
@@ -37,13 +46,20 @@ class DynamicAssertions implements GroovyInterceptable, AssertionNode {
         }
     }
 
+    static getParentNode(AssertionNode parent) {
+        if (parent != null)
+            return parent
+        else
+            throw new NoParentAssertion(parent)
+    }
+
     static AssertionNode assertHasFieldThat(DynamicAssertions assertionObject, Object objectUnderTest, String fieldName, String assertionName) {
         def field = objectUnderTest[fieldName]
         assert field != null
         if (field instanceof List) {
             def list = (List) field
             return assertListField(assertionObject, list)
-        } else if (field instanceof Object) {
+        } else if (field !instanceof Number && field !instanceof String && field instanceof Object) {
             def object = (Object) field
             return assertObjectField(assertionObject, object)
         } else {
@@ -64,7 +80,7 @@ class DynamicAssertions implements GroovyInterceptable, AssertionNode {
 
     static DynamicAssertions assertObjectField(DynamicAssertions assertionObject, Object object) {
         assert object != null
-        return new DynamicAssertions(object)
+        return new DynamicAssertions(object, assertionObject)
     }
 
     static DynamicAssertions assertEmptyField(DynamicAssertions assertionObject, Object objectUnderTest, String fieldName, String assertionName) {
@@ -102,5 +118,11 @@ class MissingFieldNameInAssertion extends RuntimeException {
 class UnsupportedAssertion extends RuntimeException {
     UnsupportedAssertion(String methodName) {
         super("Assertion with name '$methodName' is not supported on given type")
+    }
+}
+
+class NoParentAssertion extends RuntimeException {
+    NoParentAssertion(AssertionNode assertionNode) {
+        super("Cannot get parent assertion from assertion '$assertionNode'")
     }
 }

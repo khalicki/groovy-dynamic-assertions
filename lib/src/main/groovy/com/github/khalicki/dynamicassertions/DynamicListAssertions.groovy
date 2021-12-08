@@ -2,11 +2,18 @@ package com.github.khalicki.dynamicassertions
 
 class DynamicListAssertions implements AssertionNode {
     private List listUnderTest
-    private DynamicAssertions parent
+    private AssertionNode parentAssertion
 
-    DynamicListAssertions(List listUnderTest, DynamicAssertions parent) {
+    DynamicListAssertions(List listUnderTest, AssertionNode parent) {
         this.listUnderTest = listUnderTest
-        this.parent = parent
+        this.parentAssertion = parent
+    }
+
+    AssertionNode and() {
+        if (parentAssertion != null)
+            return parentAssertion
+        else
+            throw new NoParentAssertion(this)
     }
 
     DynamicListAssertions contains(Object expected) {

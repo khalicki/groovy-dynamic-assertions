@@ -51,6 +51,16 @@ You can use this assertion multiple times to navigate to desired field.
         .hasLastName('Reiner')
 ```
 
+When you want to return from nested assertions to parent use `and()` method.
+```groovy
+.hasMovieThat()
+    .hasDirectorThat()
+        .hasLastName('Reiner')
+    .and()
+    .hasWriterThat()
+        .hasLastName('Ephron')
+```
+
 
 ##### hasFieldNameThat on List fields
 
@@ -70,6 +80,17 @@ Allows also check that list is empty or its size:
 .hasIngredientsThat()
     .hasSize(2)
 ```
+
+You can return to parent assertions using `and()` method as well.
+
+```groovy
+.hasIngredientsThat()
+    .contains('ham')
+    .contains('pineapple')
+.and()
+.hasName('Pizza Hawaii')
+```
+
 
 ##### hasEmptyFieldName on List fields
 

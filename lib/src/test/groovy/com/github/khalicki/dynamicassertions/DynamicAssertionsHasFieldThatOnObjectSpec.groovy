@@ -70,4 +70,33 @@ class DynamicAssertionsHasFieldThatOnObjectSpec extends Specification {
                 .hasSecondMovieThat()
                     .hasTitle("Fight club")
     }
+
+    def "should succeed when asserting two nested fields joined by and()"() {
+        when:
+            def twoMovies = new ObjectWithTwoObjectField(
+                new ObjectWithTitleField("Seven"),
+                new ObjectWithTitleField("Fight club")
+            )
+
+        then:
+            // formatter:off
+            DynamicAssertions.assertThat(twoMovies)
+                .hasFirstMovieThat()
+                    .hasTitle("Seven")
+                .and()
+                .hasSecondMovieThat()
+                    .hasTitle("Fight club")
+            // formatter:on
+    }
+
+    def "should throw NoParentAssertion when and() is called on root assertion"() {
+        when:
+            DynamicAssertions.assertThat(new ObjectWithObjectField(new ObjectWithTitleField("Rebel Without a Cause")))
+                .and()
+
+        then:
+            def exception = thrown(NoParentAssertion)
+    }
+
+
 }

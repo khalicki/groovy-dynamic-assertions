@@ -2,6 +2,8 @@ package com.github.khalicki.dynamicassertions
 
 import com.github.khalicki.dynamicassertions.data.ObjectWithIntField
 import com.github.khalicki.dynamicassertions.data.ObjectWithListField
+import com.github.khalicki.dynamicassertions.data.ObjectWithTitleField
+import com.github.khalicki.dynamicassertions.data.Recipe
 import spock.lang.Specification
 
 class DynamicAssertionsHasFieldThatOnListSpec extends Specification {
@@ -31,13 +33,22 @@ class DynamicAssertionsHasFieldThatOnListSpec extends Specification {
             exception.message.contains('field != null')
     }
 
-    def "should fail when field is not list and not object"() {
+    def "should fail when field is number"() {
         when:
             DynamicAssertions.assertThat(new ObjectWithIntField(42))
                 .hasNumberThat()
 
         then:
-            thrown(AssertionError)
+            thrown(UnsupportedAssertion)
+    }
+
+    def "should fail when field is string"() {
+        when:
+            DynamicAssertions.assertThat(new ObjectWithTitleField("Matrix"))
+                .hasTitleThat()
+
+        then:
+            thrown(UnsupportedAssertion)
     }
 
     def "should succeed when list contains given element"() {
@@ -109,5 +120,24 @@ class DynamicAssertionsHasFieldThatOnListSpec extends Specification {
         then:
             def exception = thrown(AssertionError)
             exception.message.contains('listUnderTest.size() == expectedSize')
+    }
+
+    def "should succeed when returning from list assertions with and()"() {
+        given:
+            def recipe = new Recipe("Cuba Libre",
+                [
+                    new Recipe.Ingredient("Rum"),
+                    new Recipe.Ingredient("Coke")
+                ]
+            )
+
+        expect:
+            // formatter:off
+            DynamicAssertions.assertThat(recipe)
+                .hasIngredientsThat()
+                    .hasSize(2)
+                .and()
+                .hasTitle("Cuba Libre")
+            // formatter:on
     }
 }
