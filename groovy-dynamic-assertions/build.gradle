@@ -1,7 +1,11 @@
 plugins {
     id 'groovy'
     id 'java-library'
+    id 'maven-publish'
 }
+
+group = 'com.github.khalicki'
+version = '0.1.0'
 
 repositories {
     mavenCentral()
