@@ -8,4 +8,5 @@
  */
 
 rootProject.name = 'groovy-dynamic-assertions'
-include('lib')
+include 'lib'
+include 'assertions-demo'
