@@ -1,6 +1,6 @@
 # groovy-dynamic-assertions
 
-![CI](https://github.com/khalicki/groovy-dynamic-assertions/actions/workflows/ci/badge.svg)
+![CI](https://github.com/khalicki/groovy-dynamic-assertions/actions/workflows/ci.yml/badge.svg)
 
 Library that helps to write fluent test's assertions in groovy without tons of boilerplate code.
 
