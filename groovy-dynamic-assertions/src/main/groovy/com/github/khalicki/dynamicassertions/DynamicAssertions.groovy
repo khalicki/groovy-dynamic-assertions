@@ -3,6 +3,9 @@ package com.github.khalicki.dynamicassertions
 class DynamicAssertions implements GroovyInterceptable, AssertionNode {
     public static final String AS_BOOLEAN_METHOD = "asBoolean"
     public static final String AND_METHOD = "and"
+    public static final String IS_NULL_METHOD = "isNull"
+    public static final String IS_NOT_NULL_METHOD = "isNotNull"
+    public static final String IS_EQUAL_TO_METHOD = "isEqualTo"
     public static final String HAS_ASSERTION_PREFIX = "has"
     public static final String HAS_EMPTY_ASSERTION_PREFIX = "hasEmpty"
     public static final String THAT_ASSERTION_POSTFIX = "That"
@@ -21,7 +24,6 @@ class DynamicAssertions implements GroovyInterceptable, AssertionNode {
     }
 
     static assertThat(Object objectUnderTest) {
-        assert objectUnderTest != null
         return new DynamicAssertions(objectUnderTest)
     }
 
@@ -29,8 +31,14 @@ class DynamicAssertions implements GroovyInterceptable, AssertionNode {
     Object invokeMethod(String assertionName, Object args) {
         if (assertionName == AS_BOOLEAN_METHOD) return true
         if (assertionName == AND_METHOD) return getParentNode(this.parentAssertion)
+        if (assertionName == IS_NOT_NULL_METHOD) return ObjectAssertions.isNotNull(this, objectUnderTest)
+        if (assertionName == IS_NULL_METHOD) return ObjectAssertions.isNull(this, objectUnderTest)
         Object[] argumentList = (Object[]) args
-        if (assertionName.startsWith(HAS_ASSERTION_PREFIX) && assertionName.endsWith(THAT_ASSERTION_POSTFIX)) {
+        if (assertionName == IS_EQUAL_TO_METHOD) {
+            if (argumentList == null || argumentList.length < 1) throw new IllegalArgumentException("Missing expected value in assertion ${IS_EQUAL_TO_METHOD}()")
+            def expected = argumentList[0]
+            return ObjectAssertions.isEqualTo(this, objectUnderTest, expected)
+        } else if (assertionName.startsWith(HAS_ASSERTION_PREFIX) && assertionName.endsWith(THAT_ASSERTION_POSTFIX)) {
             def fieldName = extractFieldName(assertionName, HAS_ASSERTION_PREFIX, THAT_ASSERTION_POSTFIX)
             return assertHasFieldThat(this, objectUnderTest, fieldName, assertionName)
         } else if (assertionName.startsWith(HAS_EMPTY_ASSERTION_PREFIX)) {

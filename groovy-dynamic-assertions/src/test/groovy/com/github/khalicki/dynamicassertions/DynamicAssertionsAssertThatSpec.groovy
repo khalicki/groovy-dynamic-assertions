@@ -9,8 +9,7 @@ import spock.lang.Specification
 
 class DynamicAssertionsAssertThatSpec extends Specification {
 
-    @FailsWith(AssertionError.class)
-    def "should fail when null is asserted"() {
+    def "should succeed when null is asserted"() {
         expect:
             DynamicAssertions.assertThat(null)
     }
@@ -23,5 +22,47 @@ class DynamicAssertionsAssertThatSpec extends Specification {
     def "should succeed when argument is primitive"() {
         expect:
             DynamicAssertions.assertThat(42)
+    }
+
+    def "should fail when isNotNull() is called on null value"() {
+        when:
+            DynamicAssertions.assertThat(null).isNotNull()
+
+        then:
+            def exception = thrown(AssertionError)
+            exception.message.contains('objectUnderTest != null')
+    }
+
+    def "should succeed when isNotNull() is called on not null object"() {
+        expect:
+            DynamicAssertions.assertThat(new EmptyObject()).isNotNull()
+    }
+
+    def "should succeed when isNotNull() is called on not null primitive"() {
+        expect:
+            DynamicAssertions.assertThat(5).isNotNull()
+    }
+
+    def "should succeed when isNull() is called on null value"() {
+        expect:
+            DynamicAssertions.assertThat(null).isNull()
+    }
+
+    def "should fail when isNull() is called on not null object"() {
+        when:
+            DynamicAssertions.assertThat(new EmptyObject()).isNull()
+
+        then:
+            def exception = thrown(AssertionError)
+            exception.message.contains('objectUnderTest == null')
+    }
+
+    def "should fail when isNull() is called on not null primitive"() {
+        when:
+            DynamicAssertions.assertThat(5).isNull()
+
+        then:
+            def exception = thrown(AssertionError)
+            exception.message.contains('objectUnderTest == null')
     }
 }

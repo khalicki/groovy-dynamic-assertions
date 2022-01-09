@@ -29,6 +29,30 @@ DynamicAssertions.assertThat(new Movie('When Harry met Sally', 'Rob Reiner'))
 
 #### Types of Assertions
 
+##### isNull
+
+Asserts object under test has null value.
+
+```groovy
+.isNull()
+```
+
+##### isNotNull
+
+Asserts object under test has not null value.
+
+```groovy
+.isNotNull()
+```
+
+##### isEqualTo
+
+Asserts object under test is equal to given object.
+
+```groovy
+.isEqualTo(new Movie('When Harry met Sally'))
+```
+
 ##### hasFieldName
 
 Basic assertion that check field X has given value.
