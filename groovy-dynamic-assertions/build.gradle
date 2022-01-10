@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.github.khalicki'
-version = '0.1.0'
+version = '0.2.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -20,4 +20,17 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+task sourceJar(type: Jar) {
+    archiveClassifier = "sources"
+}
+
+publishing {
+    publications {
+        localSnapshot(MavenPublication) {
+            from components.java
+            artifact sourceJar
+        }
+    }
 }
