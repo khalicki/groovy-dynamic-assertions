@@ -1,5 +1,11 @@
 package com.github.khalicki.dynamicassertions
 
+/**
+ * Class implements dynamic assertions on list of object
+ *
+ * Use static method assertThat() to start building assertions in tests
+ * @author kamil.halicki
+ */
 class DynamicListAssertions implements AssertionNode {
     private List listUnderTest
     private AssertionNode parentAssertion
