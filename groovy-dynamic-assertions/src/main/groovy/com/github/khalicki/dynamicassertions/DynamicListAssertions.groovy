@@ -1,5 +1,11 @@
 package com.github.khalicki.dynamicassertions
 
+/**
+ * Class implements dynamic assertions on list of object
+ *
+ * Use static method assertThat() to start building assertions in tests
+ * @author kamil.halicki
+ */
 class DynamicListAssertions implements GroovyInterceptable, AssertionNode {
     public static final String AS_BOOLEAN_METHOD = "asBoolean"
     public static final String IS_EMPTY_METHOD = "isEmpty"
@@ -16,6 +22,12 @@ class DynamicListAssertions implements GroovyInterceptable, AssertionNode {
         this.parentAssertion = parent
     }
 
+    /**
+     * Starting point of all dynamic assertions on list of objects
+     *
+     * @param listUnderTest list against which all assertions will be executed
+     * @return Assertions object that can evaluate dynamic assertions on list under test
+     */
     static DynamicListAssertions assertThat(List listUnderTest) {
         return new DynamicListAssertions(listUnderTest, null)
     }

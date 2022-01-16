@@ -24,6 +24,13 @@ tasks.named('test') {
 
 task sourceJar(type: Jar) {
     archiveClassifier = "sources"
+    from sourceSets.main.allSource
+}
+
+task groovydocJar(type: Jar) {
+    dependsOn(groovydoc)
+    archiveClassifier = "javadoc"
+    from groovydoc.destinationDir
 }
 
 publishing {
@@ -31,6 +38,7 @@ publishing {
         localSnapshot(MavenPublication) {
             from components.java
             artifact sourceJar
+            artifact groovydocJar
         }
     }
 }

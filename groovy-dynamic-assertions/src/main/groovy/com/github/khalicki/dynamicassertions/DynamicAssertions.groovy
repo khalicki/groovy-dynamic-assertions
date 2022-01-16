@@ -1,5 +1,10 @@
 package com.github.khalicki.dynamicassertions
 
+/**
+ * Class implements dynamic assertions on single object
+ *
+ * Use static method assertThat() to start building assertions in tests
+ */
 class DynamicAssertions implements GroovyInterceptable, AssertionNode {
     public static final String AS_BOOLEAN_METHOD = "asBoolean"
     public static final String IS_EQUAL_TO_METHOD = "isEqualTo"
@@ -20,6 +25,12 @@ class DynamicAssertions implements GroovyInterceptable, AssertionNode {
         this.parentAssertion = parentAssertion
     }
 
+    /**
+     * Starting point of all dynamic assertions on single object
+     *
+     * @param objectUnderTest object against which all assertions will be executed
+     * @return Assertions object that can evaluate dynamic assertions on object under test
+     */
     static assertThat(Object objectUnderTest) {
         return new DynamicAssertions(objectUnderTest)
     }
