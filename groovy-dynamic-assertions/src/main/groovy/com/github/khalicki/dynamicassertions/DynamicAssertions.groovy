@@ -2,9 +2,6 @@ package com.github.khalicki.dynamicassertions
 
 class DynamicAssertions implements GroovyInterceptable, AssertionNode {
     public static final String AS_BOOLEAN_METHOD = "asBoolean"
-    public static final String AND_METHOD = "and"
-    public static final String IS_NULL_METHOD = "isNull"
-    public static final String IS_NOT_NULL_METHOD = "isNotNull"
     public static final String IS_EQUAL_TO_METHOD = "isEqualTo"
     public static final String HAS_ASSERTION_PREFIX = "has"
     public static final String HAS_EMPTY_ASSERTION_PREFIX = "hasEmpty"
@@ -30,35 +27,28 @@ class DynamicAssertions implements GroovyInterceptable, AssertionNode {
     @Override
     Object invokeMethod(String assertionName, Object args) {
         if (assertionName == AS_BOOLEAN_METHOD) return true
-        if (assertionName == AND_METHOD) return getParentNode(this.parentAssertion)
-        if (assertionName == IS_NOT_NULL_METHOD) return ObjectAssertions.isNotNull(this, objectUnderTest)
-        if (assertionName == IS_NULL_METHOD) return ObjectAssertions.isNull(this, objectUnderTest)
+        if (assertionName == AssertionNodeAssertions.AND_METHOD) return AssertionNodeAssertions.and(this, parentAssertion)
+        if (assertionName == ObjectAssertions.IS_NOT_NULL_METHOD) return ObjectAssertions.isNotNull(this, objectUnderTest)
+        if (assertionName == ObjectAssertions.IS_NULL_METHOD) return ObjectAssertions.isNull(this, objectUnderTest)
         Object[] argumentList = (Object[]) args
         if (assertionName == IS_EQUAL_TO_METHOD) {
             if (argumentList == null || argumentList.length < 1) throw new IllegalArgumentException("Missing expected value in assertion ${IS_EQUAL_TO_METHOD}()")
             def expected = argumentList[0]
             return ObjectAssertions.isEqualTo(this, objectUnderTest, expected)
         } else if (assertionName.startsWith(HAS_ASSERTION_PREFIX) && assertionName.endsWith(THAT_ASSERTION_POSTFIX)) {
-            def fieldName = extractFieldName(assertionName, HAS_ASSERTION_PREFIX, THAT_ASSERTION_POSTFIX)
+            def fieldName = Extractors.extractFieldName(assertionName, HAS_ASSERTION_PREFIX, THAT_ASSERTION_POSTFIX)
             return assertHasFieldThat(this, objectUnderTest, fieldName, assertionName)
         } else if (assertionName.startsWith(HAS_EMPTY_ASSERTION_PREFIX)) {
-            def fieldName = extractFieldName(assertionName, HAS_EMPTY_ASSERTION_PREFIX)
+            def fieldName = Extractors.extractFieldName(assertionName, HAS_EMPTY_ASSERTION_PREFIX)
             return assertEmptyField(this, objectUnderTest, fieldName, assertionName)
         } else if (assertionName.startsWith(HAS_ASSERTION_PREFIX)) {
             if (argumentList == null || argumentList.length < 1) throw new IllegalArgumentException("Missing expected value in assertion ${assertionName}()")
-            def fieldName = extractFieldName(assertionName, HAS_ASSERTION_PREFIX)
+            def fieldName = Extractors.extractFieldName(assertionName, HAS_ASSERTION_PREFIX)
             def expected = argumentList[0]
             return assertField(this, objectUnderTest, fieldName, expected)
         } else {
             throw new MissingMethodException(assertionName, DynamicAssertions.class, args)
         }
-    }
-
-    static getParentNode(AssertionNode parent) {
-        if (parent != null)
-            return parent
-        else
-            throw new NoParentAssertion(parent)
     }
 
     static AssertionNode assertHasFieldThat(DynamicAssertions assertionObject, Object objectUnderTest, String fieldName, String assertionName) {
@@ -104,17 +94,6 @@ class DynamicAssertions implements GroovyInterceptable, AssertionNode {
         }
         return assertionObject
     }
-
-    static String extractFieldName(String methodName, String assertionPrefix, String assertionPostfix = null) {
-        if (!methodName.startsWith(assertionPrefix)) return methodName
-        if (methodName == assertionPrefix) throw new MissingFieldNameInAssertion(methodName)
-        def firstLetter = methodName.charAt(assertionPrefix.length()).toLowerCase().toString()
-        def tail = methodName.substring(assertionPrefix.length() + 1)
-        if (assertionPostfix != null && tail.endsWith(assertionPostfix)) {
-            tail = tail.substring(0, tail.length() - assertionPostfix.length())
-        }
-        return firstLetter + tail
-    }
 }
 
 class MissingFieldNameInAssertion extends RuntimeException {
@@ -126,11 +105,5 @@ class MissingFieldNameInAssertion extends RuntimeException {
 class UnsupportedAssertion extends RuntimeException {
     UnsupportedAssertion(String methodName) {
         super("Assertion with name '$methodName' is not supported on given type")
-    }
-}
-
-class NoParentAssertion extends RuntimeException {
-    NoParentAssertion(AssertionNode assertionNode) {
-        super("Cannot get parent assertion from assertion '$assertionNode'")
     }
 }

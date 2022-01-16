@@ -27,7 +27,16 @@ DynamicAssertions.assertThat(new Movie('When Harry met Sally', 'Rob Reiner'))
     .hasDirector('Rob Reiner')
 ```
 
-#### Types of Assertions
+When you start with list of objects start with `DynamicListAssertions`:
+
+```groovy
+DynamicListAssertions.assertThat(movies)
+    .isNotEmpty()
+```
+
+Class `DynamicListAssertions` has different assertion methods and they are described later. Because complex object structures often have list fields you can change from `DynamicAssertions` to `DynamicListAssertions` and back again.
+
+#### Assertions on single object
 
 ##### isNull
 
@@ -132,4 +141,54 @@ Checks that field is empty String. String with null value is not treated as empt
 
 ```groovy
 .hasEmptyTitle()
+```
+
+#### Assertions on lists
+
+##### isNull
+
+Asserts list under test has null value.
+
+```groovy
+.isNull()
+```
+
+##### isNotNull
+
+Asserts list under test has not null value.
+
+```groovy
+.isNotNull()
+```
+
+##### isEmpty
+
+Asserts list under test is empty.
+
+```groovy
+.isEmpty()
+```
+
+##### isNotEmpty
+
+Asserts list under test is not empty.
+
+```groovy
+.isNotEmpty()
+```
+
+##### contains
+
+Asserts list under test contains given object. To compare objects `equals()` method is used.
+
+```groovy
+.contains(new Movie('Breaveheart'))
+```
+
+##### containsItemWithFieldName
+
+Asserts that list contains object having given field name with provided value.
+
+```groovy
+.containsItemWithTitle('Breaveheart')
 ```
