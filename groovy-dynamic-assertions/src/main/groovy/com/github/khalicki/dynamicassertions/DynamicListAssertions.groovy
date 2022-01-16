@@ -22,6 +22,12 @@ class DynamicListAssertions implements GroovyInterceptable, AssertionNode {
         this.parentAssertion = parent
     }
 
+    /**
+     * Starting point of all dynamic assertions on list of objects
+     *
+     * @param listUnderTest list against which all assertions will be executed
+     * @return Assertions object that can evaluate dynamic assertions on list under test
+     */
     static DynamicListAssertions assertThat(List listUnderTest) {
         return new DynamicListAssertions(listUnderTest, null)
     }
