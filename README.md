@@ -192,3 +192,12 @@ Asserts that list contains object having given field name with provided value.
 ```groovy
 .containsItemWithTitle('Breaveheart')
 ```
+
+##### containsItemWithFieldNameThat
+
+Same as `containsItemWithFieldName` but allows chaining assertions on list item matching criteria. If more elements satisfy criteria assertions are executed agains fist matching item. In order to go back list assertions use `and()` method.
+
+```groovy
+.containsItemWithTitleThat('Breaveheart')
+    .hasDirector('Mel Gibson')
+```

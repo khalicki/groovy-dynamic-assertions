@@ -13,6 +13,7 @@ class DynamicListAssertions implements GroovyInterceptable, AssertionNode {
     public static final String HAS_SIZE_METHOD = "hasSize"
     public static final String CONTAINS_METHOD = "contains"
     public static final String CONTAINS_ITEM_WITH_PREFIX = "containsItemWith"
+    public static final String THAT_SUFFIX = "That"
 
     private List listUnderTest
     private AssertionNode parentAssertion
@@ -50,6 +51,8 @@ class DynamicListAssertions implements GroovyInterceptable, AssertionNode {
             return hasSize(this, argumentList)
         } else if (assertionName == CONTAINS_METHOD) {
             return contains(this, argumentList)
+        } else if (assertionName.startsWith(CONTAINS_ITEM_WITH_PREFIX) && assertionName.endsWith(THAT_SUFFIX)) {
+            return containsItemWithThat(this, argumentList, assertionName)
         } else if (assertionName.startsWith(CONTAINS_ITEM_WITH_PREFIX)) {
             return containsItemWith(this, argumentList, assertionName)
         } else {
@@ -98,5 +101,15 @@ class DynamicListAssertions implements GroovyInterceptable, AssertionNode {
         def expected = argumentList[0]
         assert listUnderTest.any { it[propertyName] == expected }
         return listAssertions
+    }
+
+    static DynamicAssertions containsItemWithThat(DynamicListAssertions listAssertions, Object[] argumentList, String methodName) {
+        requireExpectedValue(argumentList, methodName)
+        def propertyName = Extractors.extractFieldName(methodName, CONTAINS_ITEM_WITH_PREFIX, THAT_SUFFIX)
+        def listUnderTest = listAssertions.listUnderTest
+        def expected = argumentList[0]
+        assert listUnderTest.any { it[propertyName] == expected }
+        def firstMatchingItem = listUnderTest.find { it[propertyName] == expected }
+        return new DynamicAssertions(firstMatchingItem, listAssertions)
     }
 }
