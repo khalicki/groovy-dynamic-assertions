@@ -34,11 +34,19 @@ task groovydocJar(type: Jar) {
 }
 
 publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/khalicki/groovy-dynamic-assertions")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }
+    }
     publications {
-        localSnapshot(MavenPublication) {
-            from components.java
-            artifact sourceJar
-            artifact groovydocJar
+        github(MavenPublication) {
+            from(components.java)
         }
     }
 }
