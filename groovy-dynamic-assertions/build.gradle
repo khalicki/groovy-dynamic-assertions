@@ -45,6 +45,11 @@ publishing {
         }
     }
     publications {
+        localSnapshot(MavenPublication) {
+            from components.java
+            artifact sourceJar
+            artifact groovydocJar
+        }
         github(MavenPublication) {
             from(components.java)
         }
