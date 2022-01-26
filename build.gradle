@@ -1,0 +1,23 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(System.env.'JAVA_VERSION' ?: 11)
+
+compileJava {
+    options.release = 8
+}
+
+group = 'io.github.khalicki'
+version = '0.2.1-SNAPSHOT'
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
+}
